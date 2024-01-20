@@ -6,10 +6,11 @@ const files = dir.readdir(myPath, { withFileTypes: true });
 let str = [];
 let filenames = [];
 files.then(function file(data) {
-    data.forEach(function f(file) {
-        str.push(path.basename(file.name, path.extname(file.name)) + " - " + path.extname(file.name).slice(1) + " - ");
-        filenames.push(path.basename(file.name));
-    });
+    for (let i=0; i<data.length; i++)
+    {
+        str.push(path.basename(data[i].name, path.extname(data[i].name)) + " - " + path.extname(data[i].name).slice(1) + " - ");
+        filenames.push(path.basename(data[i].name));
+    };
     for (let i = 0; i <= str.length - 1; i++) {
         fs.stat(path.resolve(__dirname, "./secret-folder/", String(filenames[i])), function (err, stats) {
             if (stats.isFile())
