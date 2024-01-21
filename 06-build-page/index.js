@@ -2,14 +2,17 @@ const path = require('node:path');
 const dir = require('node:fs').promises;
 const fs = require('fs');
 
-const pathCss = path.resolve(__dirname, "./project-dist/style.css");
-const pathHtml = path.resolve(__dirname, "./project-dist/index.html");
+let pathCss = path.resolve(__dirname, "./project-dist/style.css");
+let pathHtml = path.resolve(__dirname, "./project-dist/index.html");
 const oldPathAssets = path.resolve(__dirname, "./assets");
-const newPathAssets = path.resolve(__dirname, "./project-dist/assets");
+let newPathAssets = path.resolve(__dirname, "./project-dist");
 
 /*копирование диектории assets*/
 dir.mkdir(newPathAssets, { recursive: true });
-const files = dir.readdir(oldPathAssets);
+let directories = dir.readdir(newPathAssets);
+newPathAssets = path.resolve(__dirname, "./project-dist/assets");
+dir.mkdir(newPathAssets, { recursive: true });
+let files = dir.readdir(oldPathAssets);
 files.then(function file(data) {
     for (let i = 0; i < data.length; i += 1) {
         fs.copyFile(path.resolve(oldPathAssets, data[i]), path.resolve(newPathAssets, data[i]), (err) => {
@@ -45,7 +48,7 @@ files.then(function file(data) {
 
 /* Создание стиля */
 
-const newfile = new fs.WriteStream(pathCss);
+let newfile = new fs.WriteStream(pathCss);
 pathCss = path.resolve(__dirname, "./styles");
 files = dir.readdir(pathCss);
 files.then(function file(data) {
@@ -64,3 +67,38 @@ files.then(function file(data) {
     };
 });
 
+/* создание html файла */
+newfile = new fs.WriteStream(pathHtml);
+pathHtml = path.resolve(__dirname, "./components");
+pathHtml1 = path.resolve(__dirname, "template.html");
+
+let text = ""
+file = new fs.ReadStream(pathHtml1);
+file.on('readable', function () {
+    let data;    
+    while ((data = file.read()) != null) 
+    {
+        text+="\n"+data;
+    }
+});
+
+files = dir.readdir(pathHtml);
+files.then(function file(data) {
+    let res = "";
+    for (let i = 0; i < data.length; i++) {
+        fs.stat(path.resolve(pathHtml, data[i]), function (err, stats) {
+            if (stats.isFile() && path.extname(data[i]) === '.css') {
+                let tempData;
+                let fileTemp = new fs.ReadStream(path.resolve(pathHtml, data[i]));
+                fileTemp.on('readable', function () {
+                    while ((dataTemp = fileTemp.read()) != null) {
+                        tempData+=dataTemp;
+                    }
+                });
+                text.replace("{{"+path.basename(data[i].name, path.extname(data[i].name))+"}}", tempData);
+            }
+        });
+    };
+});
+
+newfile.write(text);
