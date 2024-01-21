@@ -1,7 +1,7 @@
 const path = require('node:path');
 const dir = require('node:fs').promises;
 const fs = require('fs');
-
+ 
 let pathCss = path.resolve(__dirname, "./project-dist/bundle.css");
 const newfile = new fs.WriteStream(pathCss);
 
