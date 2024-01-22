@@ -1,7 +1,6 @@
 const path = require('node:path');
 const dir = require('node:fs').promises;
 const fs = require('fs');
-
 let pathCss = path.resolve(__dirname, "./project-dist/style.css");
 let pathHtml = path.resolve(__dirname, "./project-dist/index.html");
 
@@ -54,7 +53,6 @@ folders.then(function fild(folder) {
 });
 
 /* Создание стиля */
-
 let newfile = new fs.WriteStream(pathCss);
 pathCss = path.resolve(__dirname, "./styles");
 files = dir.readdir(pathCss);
@@ -75,36 +73,39 @@ files.then(function file(data) {
 });
 
 /* создание html файла */
-newfile = new fs.WriteStream(pathHtml);
+
 pathHtml = path.resolve(__dirname, "./components");
 pathHtml1 = path.resolve(__dirname, "template.html");
 
-let text = ""
+let text = "";
 file = new fs.ReadStream(pathHtml1);
 file.on('readable', function () {
     let data;
+
     while ((data = file.read()) != null) {
         text += "\n" + data;
-    }
-});
+    }  
 
 files = dir.readdir(pathHtml);
 files.then(function file(data) {
     let res = "";
     for (let i = 0; i < data.length; i++) {
         fs.stat(path.resolve(pathHtml, data[i]), function (err, stats) {
-            if (stats.isFile() && path.extname(data[i]) === '.css') {
-                let tempData;
+            if (stats.isFile() && path.extname(data[i]) === '.html') {
+                let tempData = "";
                 let fileTemp = new fs.ReadStream(path.resolve(pathHtml, data[i]));
                 fileTemp.on('readable', function () {
                     while ((dataTemp = fileTemp.read()) != null) {
                         tempData += dataTemp;
-                    }
-                });
-                text.replace("{{" + path.basename(data[i].name, path.extname(data[i].name)) + "}}", tempData);
+                    }                    
+                    text = text.replace("{{" + path.basename(data[i], path.extname(data[i])) + "}}", tempData);                    
+                    let newfileHtml = new fs.WriteStream(path.resolve(__dirname, "./project-dist/index.html"));
+                    newfileHtml.write(text);  
+                });        
             }
-        });
-    };
+        });            
+    };    
+});
 });
 
-newfile.write(text);
+
