@@ -13,20 +13,35 @@ dir.mkdir(newPathAssets, { recursive: true });
 newPathAssets = path.resolve(__dirname, "./project-dist/assets");
 dir.mkdir(newPathAssets, { recursive: true });
 
+let oldFiles = dir.readdir(newPathAssets, {withFileTypes: true})
+oldFiles.then(function del(data)
+{    
+    for (let i = 0; i < data.length; i++) {
+
+        
+        let files = dir.readdir(path.resolve(data[i].path, data[i].name), { withFileTypes: true });
+        files.then(function file(data2) {
+            for (let k=0; k<data2.length; k++)
+            {            
+            fs.unlink(path.resolve(data2[k].path, data2[k].name), (err) => {
+                if (err) throw err;
+              });
+            }
+        });        
+      }
+});
+
 let folders = dir.readdir(oldPathAssets, { withFileTypes: true });
 folders.then(function fild(folder) {
     let folderNameTemp = [];
-
     for (let k = 0; k <= folder.length - 1; k++) {
         if (folder[k].isDirectory()) {
             folderNameTemp.push(folder[k]);
         }
     }
-
     for (let k = 0; k <= folderNameTemp.length - 1; k++) {
         dir.mkdir(path.resolve(newPathAssets, folderNameTemp[k].name), { recursive: true });
     }
-
     for (let k = 0; k <= folderNameTemp.length - 1; k++) {
         let files = dir.readdir(path.resolve(folderNameTemp[k].path, folderNameTemp[k].name), { withFileTypes: true });
         files.then(function file(data) {
@@ -37,10 +52,11 @@ folders.then(function fild(folder) {
                     }
                 });
             }
-            
+
         });
     }
 });
+
 
 
 
