@@ -16,55 +16,31 @@ dir.mkdir(newPathAssets, { recursive: true });
 let folders = dir.readdir(oldPathAssets, { withFileTypes: true });
 folders.then(function fild(folder) {
     let folderNameTemp = [];
+
     for (let k = 0; k <= folder.length - 1; k++) {
         if (folder[k].isDirectory()) {
             folderNameTemp.push(folder[k]);
-            console.log(folder[k]);
         }
     }
+
     for (let k = 0; k <= folderNameTemp.length - 1; k++) {
         dir.mkdir(path.resolve(newPathAssets, folderNameTemp[k].name), { recursive: true });
     }
-   /* for (let k = 0; k <= folderNameTemp.length - 1; k++) {
-       
-       let files = dir.readdir(folderNameTemp[k].path);        
+
+    for (let k = 0; k <= folderNameTemp.length - 1; k++) {
+        let files = dir.readdir(path.resolve(folderNameTemp[k].path, folderNameTemp[k].name), { withFileTypes: true });
         files.then(function file(data) {
             for (let i = 0; i < data.length; i += 1) {
-                fs.copyFile(path.resolve(folderNameTemp[k].path, data[i]), path.resolve(newPathAssets, data[i]), (err) => {
+                fs.copyFile(path.resolve(data[i].path, data[i].name), path.resolve(newPathAssets, path.basename(data[i].path), data[i].name), (err) => {
                     if (err) {
                         console.log(err);
                     }
                 });
             }
+            
         });
-        let pathes = [];
-        const files2 = dir.readdir(newPathAssets);
-        files.then(function file(data) {
-            files2.then(function file(data2) {
-                for (let i = 0; i < data2.length; i++) {
-                    let k = -1;
-                    for (let j = 0; j < data.length; j++) {
-                        if (data2[i] == data[j]) {
-                            k = j;
-                            break;
-                        }
-                    }
-                    if (k === -1) {
-                        pathes.push(data2[i]);
-                    }
-                }
-                for (let i = 0; i < pathes.length; i++) {
-                    fs.unlink(path.resolve(newPathAssets, pathes[i]), (err) => {
-                        if (err) throw err;
-                    });
-                }
-            });
-        });
-
-    }*/
+    }
 });
-
-
 
 
 

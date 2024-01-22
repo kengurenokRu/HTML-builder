@@ -17,6 +17,7 @@ function copyFiles() {
       });
     }
   });
+  
   let pathes = [];
   const files2 = dir.readdir(newPath);
   files.then(function file(data) {
