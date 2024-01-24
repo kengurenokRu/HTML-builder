@@ -14,11 +14,13 @@ const readline = require('readline');
         }
     else 
     {       
-        text.close();
-        console.log("Прощай, Путник! Надеюсь, наша совместная работа тебе понравилась");
+        text.close();        
     }
     });
-
+text.on('close', function()
+{
+    console.log("Прощай, Путник! Надеюсь, наша совместная работа тебе понравилась");
+});
     
  
 
