@@ -4,22 +4,23 @@ const fs = require('fs');
 let pathCss = path.resolve(__dirname, "./project-dist/style.css");
 let pathHtml = path.resolve(__dirname, "./project-dist/index.html");
 
-
+async function assets()
+{
 /*копирование директории assets*/
 let oldPathAssets = path.resolve(__dirname, "./assets");
 let newPathAssets = path.resolve(__dirname, "./project-dist");
-dir.mkdir(newPathAssets, { recursive: true });
+await dir.mkdir(newPathAssets, { recursive: true });
 newPathAssets = path.resolve(__dirname, "./project-dist/assets");
-dir.mkdir(newPathAssets, { recursive: true });
+await dir.mkdir(newPathAssets, { recursive: true });
 let oldFiles = dir.readdir(newPathAssets, {withFileTypes: true})
-oldFiles.then(function del(data)
+oldFiles.then(async function del(data)
 {    
     for (let i = 0; i < data.length; i++) {        
         let files = dir.readdir(path.resolve(data[i].path, data[i].name), { withFileTypes: true });
-        files.then(function file(data2) {
+        files.then(async function file(data2) {
             for (let k=0; k<data2.length; k++)
             {            
-            fs.unlink(path.resolve(data2[k].path, data2[k].name), (err) => {
+                await fs.unlink(path.resolve(data2[k].path, data2[k].name), (err) => {
                 if (err) throw err;
               });
             }
@@ -27,7 +28,7 @@ oldFiles.then(function del(data)
       }
 });
 let folders = dir.readdir(oldPathAssets, { withFileTypes: true });
-folders.then(function fild(folder) {
+folders.then(async function fild(folder) {
     let folderNameTemp = [];
     for (let k = 0; k <= folder.length - 1; k++) {
         if (folder[k].isDirectory()) {
@@ -35,13 +36,13 @@ folders.then(function fild(folder) {
         }
     }
     for (let k = 0; k <= folderNameTemp.length - 1; k++) {
-        dir.mkdir(path.resolve(newPathAssets, folderNameTemp[k].name), { recursive: true });
+        await dir.mkdir(path.resolve(newPathAssets, folderNameTemp[k].name), { recursive: true });
     }
     for (let k = 0; k <= folderNameTemp.length - 1; k++) {
         let files = dir.readdir(path.resolve(folderNameTemp[k].path, folderNameTemp[k].name), { withFileTypes: true });
-        files.then(function file(data) {
+        files.then(async function file(data) {
             for (let i = 0; i < data.length; i += 1) {
-                fs.copyFile(path.resolve(data[i].path, data[i].name), path.resolve(newPathAssets, path.basename(data[i].path), data[i].name), (err) => {
+                await fs.copyFile(path.resolve(data[i].path, data[i].name), path.resolve(newPathAssets, path.basename(data[i].path), data[i].name), (err) => {
                     if (err) {
                         console.log(err);
                     }
@@ -51,7 +52,8 @@ folders.then(function fild(folder) {
         });
     }
 });
-
+}
+assets();
 /* Создание стиля */
 let newfile = new fs.WriteStream(pathCss);
 pathCss = path.resolve(__dirname, "./styles");
